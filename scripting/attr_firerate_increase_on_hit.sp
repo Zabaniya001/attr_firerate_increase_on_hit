@@ -286,6 +286,10 @@ public void OnTakeDamageAlivePost(int iVictim, int iAttacker, int iInflictor, fl
 	if(iWeapon <= 0 || !IsValidEntity(iWeapon))
 		return;
 
+	// Sometimes iWeapon is... not a weapon.
+	if(!TF2Util_IsEntityWeapon(iWeapon))
+		return;
+
 	int iSlot = TF2Util_GetWeaponSlot(iWeapon);
 
 	if(iSlot >= sizeof(g_hWeapons[]))
