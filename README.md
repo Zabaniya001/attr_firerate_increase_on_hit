@@ -33,6 +33,8 @@ The max is 80%, you gain 3%, the damage you have to deal to gain the % is 40, th
 
 [TF2 Attributes](https://github.com/nosoop/tf2attributes)
 
+[TF2 Utils](https://github.com/nosoop/SM-TFUtils/)
+
 You might need [this dependency as well](https://github.com/nosoop/stocksoup) if you want to compile it yourself.
 
 ## Other info
