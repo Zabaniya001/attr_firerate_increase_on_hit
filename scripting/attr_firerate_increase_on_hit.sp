@@ -176,7 +176,23 @@ public void OnClientPutInServer(int iClient)
 
 public void Event_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast) 
 {
-	int iClient = GetClientOfUserId(event.GetInt("userid"));
+	int iUserID = event.GetInt("userid");
+
+	// Looks like "post_inventory_application" is too soon to have the logic in.
+	// Weapons that weren't supposed to have the attribute would keep it.
+	// Therefore, I'm delaying it by a frame ( RequestFrame ).
+	//
+	// TO-DO: Add new forwards to tf_custom_attributes / make a new plugin 
+	// to avoid having to do all of this mess to check 
+	// when a weapon gets removed, reset or given to the player.
+	RequestFrame(RF_PostInventoryApplication, iUserID);
+
+	return;
+}
+
+void RF_PostInventoryApplication(int iUserID)
+{
+	int iClient = GetClientOfUserId(iUserID);
 
 	if(!IsValidClient(iClient))
 		return;
@@ -255,7 +271,7 @@ public void OnWeaponSwitchPost(int iClient, int iWeapon)
 	if(iPreviousSlot < sizeof(g_hWeapons[]))
 	{
 		// Resetting the fire rate in case the previous weapon had bonus fire-rate.
-		if(g_hWeapons[iClient][iPreviousSlot].m_flMaxSpeed && g_hWeapons[iClient][iPreviousSlot].m_flSpeed)
+		if(g_hWeapons[iClient][iPreviousSlot].HasCustomAttribute() && g_hWeapons[iClient][iPreviousSlot].m_flSpeed)
 		{
 			RemoveFireRate(iClient);
 
@@ -266,7 +282,7 @@ public void OnWeaponSwitchPost(int iClient, int iWeapon)
 	if(iSlot >= sizeof(g_hWeapons[]))
 		return;
 
-	if(!g_hWeapons[iClient][iSlot].m_flMaxSpeed)
+	if(!g_hWeapons[iClient][iSlot].HasCustomAttribute())
 		return;
 
 	if(!g_hWeapons[iClient][iSlot].m_flSpeed)
@@ -280,7 +296,7 @@ public void OnWeaponSwitchPost(int iClient, int iWeapon)
 
 public void OnTakeDamageAlivePost(int iVictim, int iAttacker, int iInflictor, float flDamage, int iDamageType, int iWeapon, const float vDamageForce[3], const float vDamagePosition[3], int iDamagecustom)
 {
-	if(!IsValidClient(iVictim) || !IsValidClient(iAttacker) || !IsValidEntity(iWeapon) || iAttacker == iVictim)
+	if(!IsValidClient(iVictim) || !IsValidClient(iAttacker) || iAttacker == iVictim)
 		return;
 
 	if(iWeapon <= 0 || !IsValidEntity(iWeapon))
@@ -423,7 +439,7 @@ public Action OnCustomStatusHUDUpdate(int iClient, StringMap entries)
 	if(iSlot >= sizeof(g_hWeapons[]))
 		return Plugin_Continue;
 
-	if(!g_hWeapons[iClient][iSlot].m_flMaxSpeed)
+	if(!g_hWeapons[iClient][iSlot].HasCustomAttribute())
 		return Plugin_Continue;
 
 	float flPercentage = g_hWeapons[iClient][iSlot].GetPercentage();
@@ -446,9 +462,6 @@ stock bool IsValidClient(int iClient)
         return false;
 
     if(!IsClientInGame(iClient))
-        return false;
-
-    if(GetEntProp(iClient, Prop_Send, "m_bIsCoaching"))
         return false;
     
     return true;
