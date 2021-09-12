@@ -17,7 +17,7 @@
 #define PLUGIN_NAME 		"[TF2-CA] Attack Speed Bonus"
 #define PLUGIN_AUTHOR 		"Zabaniya001"
 #define PLUGIN_DESCRIPTION 	"Custom Attribute that utilizes Nosoop's CA Framework. The more you hit someone the more your Attack Speed & Reload Speed increase."
-#define PLUGIN_VERSION 		"1.0.0"
+#define PLUGIN_VERSION 		"1.0.1"
 #define PLUGIN_URL 			"https://alliedmods.net"
 
 public Plugin myinfo = {
